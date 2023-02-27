@@ -1,0 +1,10 @@
+[readable]
+cv_imshow_title = Mantis-Shrimp-Eye-s-Collision-Avoidance
+video_path_file = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/videos/00bb96a5a68f4fa5bc5c5dc66ce314d2.mp4
+video_save_path_folder = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/outputs/
+ustunekayit_true_ayriayri_false = True
+right_detection_model = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/models/best_100_1024.pt
+
+[changeable]
+threshold = 0.7
+
