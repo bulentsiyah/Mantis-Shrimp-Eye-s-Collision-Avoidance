@@ -38,7 +38,7 @@ class VideoCapture:
 
         self.frame_fps = int(self.video_capture.get(cv2.CAP_PROP_FPS))
 
-        self.frame_number = 0
+        self.frame_number = 2 #0
         self.id = os.path.splitext(os.path.basename(video_path))[0]
 
         self.resizing = True
@@ -48,6 +48,8 @@ class VideoCapture:
         self.selecetROI = True
         self.box = None
         self.ret = True
+
+        self.scale = 1.0
 
         if self.frame_width != self.camera_parameters.width:
             if self.resizing:
@@ -59,20 +61,25 @@ class VideoCapture:
                 self.new_height = self.frame_height
 
 
-        test_id, ext_main_image_filepath= os.path.splitext(os.path.basename(video_path))
+        flight_id, ext_main_image_filepath= os.path.splitext(os.path.basename(video_path))
+        temp_video_folder = os.path.join(self.configurationManager.config_readable['output_path_folder']+flight_id+"/")
+
+        if os.path.exists(temp_video_folder)==False:
+            os.mkdir(temp_video_folder)
+                                           
         ustuneKayit_True_ayriAyri_False = eval(self.configurationManager.config_readable['ustuneKayit_True_ayriAyri_False'])
-        temp_video_on_ek = ""
+        temp_video_on_ek= ""
         if ustuneKayit_True_ayriAyri_False == False:
-            temp_video_on_ek = datetime.fromtimestamp(time.time()).strftime("%d-%m-%Y, %H:%M:%S")
+            temp_video_on_ek = str(datetime.fromtimestamp(time.time()).strftime("%d-%m-%Y_%H_%M_%S"))
 
         self.pure_frame_save = pure_frame_save
         if self.pure_frame_save:
-            temp_save_file =os.path.dirname(sys.argv[0]) +self.configurationManager.config_readable['video_save_path_folder']+temp_video_on_ek+test_id+'_output_saa_pure.avi'
+            temp_save_file = os.path.join(temp_video_folder, temp_video_on_ek+'_output_saa_pure.avi')
             self.pure_frame_save_out = cv2.VideoWriter(temp_save_file,cv2.VideoWriter_fourcc(*'XVID'), self.frame_fps, (self.new_width,self.new_height)) 
         
         self.vision_frame_save = vision_frame_save
         if self.vision_frame_save:
-            temp_save_file = os.path.dirname(sys.argv[0]) +self.configurationManager.config_readable['video_save_path_folder']+temp_video_on_ek+test_id+'_output_saa_vision.avi'
+            temp_save_file = os.path.join(temp_video_folder, temp_video_on_ek+'_output_saa_vision.avi')
             self.vision_frame_save_out = cv2.VideoWriter(temp_save_file,cv2.VideoWriter_fourcc(*'XVID'), self.frame_fps, (self.new_width,self.new_height)) 
 
         self.__method_init_time= time.time()

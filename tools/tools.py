@@ -10,23 +10,32 @@ from math import atan2, pi, cos, sin
 import matplotlib.pyplot as plt
 import numpy as np
 
-@dataclass
-class GeoLocation:
-    name: str
-    latitude: float
-    longitude: float
+from enum import Enum
 
+@dataclass
+class ObjectTypes(Enum):
+    Airplane = 0
+    Helicopter = 1
+    Bird = 2
+    Drone = 3
+    Flock = 4
+    Airborne = 5
 
 @dataclass
 class RightDetection:
+    object_type : str
+    confidence : str
     risk_situation: bool
-    risk_factor_x: float
-    risk_factor_y: float
+    risk_factor_x_min: float
+    risk_factor_y_min: float
+    risk_factor_x_max: float
+    risk_factor_y_max: float
+    range_distance:float
 
 
 class Utils:
     frame_fps_kac_saniye = 1
-    location_coefficient = 10000000
+    yolo_confidence = 0.5
     camera_height_max = 2081
     camera_height_min = 480
 

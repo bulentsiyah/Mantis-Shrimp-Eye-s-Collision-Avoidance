@@ -7,15 +7,16 @@ import sys
 sys.path.append('tools')
 from configmanager import ConfigurationManager
 
-from tools import DrawingOpencv, RightDetection, Utils
+from tools import DrawingOpencv, RightDetection, Utils, ObjectTypes
 
 class ContextReturn:
         
     def __init__(self):
         self.frame = None
         self.return_call_time = None
-        self.right_detection = RightDetection(risk_situation=False,risk_factor_x=0,risk_factor_y=0)
+        self.right_detection = RightDetection(risk_situation=False,confidence="0",object_type="None",risk_factor_x_min=0,risk_factor_y_min=0,risk_factor_x_max=0,risk_factor_y_max=0,range_distance=0)
         self.method_fps = 0
+        
 
 
 class CollisionCalculationContext:
@@ -63,11 +64,10 @@ class CollisionCalculationContext:
         # işlem başlıyor
         call_time_for_context_return = time.time() 
         
-
         # bunu ilerde async task donustur
         self.frame=self.rightDetection(frame=self.frame)
 
-        
+
         #return hazırlığı
         self.context_return.frame = self.frame
         self.context_return.return_call_time= call_time_for_context_return
@@ -86,26 +86,29 @@ class CollisionCalculationContext:
     def rightDetection(self, frame):
 
         try:
-
+            self.context_return.right_detection= RightDetection(risk_situation=False,confidence="0",object_type="None",risk_factor_x_min=0,risk_factor_y_min=0,risk_factor_x_max=0,risk_factor_y_max=0,range_distance=0)
             results = self.right_detection_model.predict(frame, show=False ) # class=[0,2,3]--- hide_labels ---hide_conf
             howmany_haveyougot=results[0].boxes.boxes
 
             for i in howmany_haveyougot:
                 xmin,ymin,xmax,ymax,confidence,class_id=i
-                x1=int(xmin)
+                x1=int(xmin) 
                 y1=int(ymin)
                 x2=int(xmax)
                 y2=int(ymax)
                 confidence=float(confidence)
                 class_id=int(class_id)
 
-                if confidence >= 0.5:
-                    self.context_return.right_detection=RightDetection(risk_situation=True,risk_factor_x=float(x1),risk_factor_y=float(y1))
+                enum_value = ObjectTypes(class_id).name
+
+                if confidence >= Utils.yolo_confidence:
+                    self.context_return.right_detection=RightDetection(risk_situation=True,confidence=str(confidence),object_type=enum_value,risk_factor_x_min=float(x1),risk_factor_y_min=float(y1),risk_factor_x_max=float(x2),risk_factor_y_max=float(y2), range_distance=0)
                     if self.visual_drawing:
                         DrawingOpencv.drawing_rectangle(frame, class_id, (x1,y1), (x2,y2))
-                        cv2.imwrite("test.png", cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+                        # cv2.imwrite("test.png", cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
                         
 
             return frame
         except:
+            print("exception: def rightDetection")
             pass

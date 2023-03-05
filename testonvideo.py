@@ -10,6 +10,7 @@ import copy
 from collisioncalculationcontext import CollisionCalculationContext
 
 from threading import Thread
+from dnncompare import DNNCompare
 
 sys.path.append('tools')
 from configmanager import ConfigurationManager
@@ -34,9 +35,11 @@ class TestOnVideo:
 
         self.drawopencv = DrawingOpencv()
 
-        self.camera_parameters = CameraParameters("amazon_prime_air_half")
+        self.camera_parameters = CameraParameters("amazon_prime_air")
 
         self.videocapture = VideoCapture(camera_parameters=self.camera_parameters, configurationManager=self.configurationManager)
+
+        self.dnn_compare = DNNCompare(configurationManager=self.configurationManager)
 
         self.collisioncalculation = CollisionCalculationContext(camera_parameters=self.camera_parameters, configurationManager=self.configurationManager, visual_drawing=True)
 
@@ -70,15 +73,27 @@ class TestOnVideo:
             else:
                 self.context_return = self.collisioncalculation.context(frame=copy.deepcopy(frame))
                 
-            frame= self.context_return.frame
             
             #coolison işimiz bitti
+            frame= self.context_return.frame
             #self.drawopencv.drawing_frame_number_text(frame, self.videocapture.frame_number, context_return.method_fps)
             self.drawopencv.drawing_frame_number_text(frame, self.videocapture.frame_number, self.videocapture.method_fps)
             # işlenmiş halini kaydetmek istersen kaydet
             self.videocapture.save_vision_frame_save(frame=frame)
 
+            #DNN için işlemler
+            if self.context_return.right_detection.object_type != "None":
+                self.dnn_compare.save_dnn_pred(right_detection=copy.deepcopy(self.context_return.right_detection),frame_id=self.videocapture.frame_number,scale=self.videocapture.scale )
+
+
+
+
+            #genel gosterım 
             try:
+                '''scale = 2.0
+                new_width = int(self.camera_parameters.width / scale)
+                new_height = int( self.camera_parameters.height / scale)
+                frame_show = cv2.resize(frame, (new_width, new_height))'''
                 cv2.imshow(self.cv_imshow_title,  cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
             except:
                 print("main exception")
@@ -89,12 +104,13 @@ class TestOnVideo:
             if main_print_show:
                 print("Video Capture fps rate:","FPS: "+str(self.videocapture.work_time_fps))
 
-
+        self.dnn_compare.save_dnn_pred_path()
         self.videocapture.all_video_release()
         cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
     
-    test_on_video = TestOnVideo()
+    # coklu oldugu anlasılısa video path setlenebılır
+    test_on_video = TestOnVideo(pure_frame_save=False,vision_frame_save=True)
     test_on_video.run()
