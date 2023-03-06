@@ -25,6 +25,7 @@ class CameraParameters:
         list_of_camera = {"default" : {"width": 1280, "height" : 720, "pixel_in_centimeters" :6.8 }, 
                          "amazon_prime_air" : {"width": 2448, "height" : 2048, "pixel_in_centimeters" :10.0 }, 
                          "amazon_prime_air_half" : {"width": 1224, "height" : 1024, "pixel_in_centimeters" :10.0 }, 
+                         "amazon_prime_air_quarter" : {"width": 612, "height" : 512, "pixel_in_centimeters" :10.0 },
                           "webcam"  : {"width": 640, "height" : 480, "pixel_in_centimeters" :20.0 },
                           "logitech"  : {"width": 640, "height" : 480, "pixel_in_centimeters" : 16 }, #15.83 },
                           "airsim"  : {"width": 640, "height" : 480, "pixel_in_centimeters" :32.5 },

@@ -1,9 +1,12 @@
 [readable]
 cv_imshow_title = Mantis-Shrimp-Eye-s-Collision-Avoidance
-video_path_file = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/videos/00bb96a5a68f4fa5bc5c5dc66ce314d2.mp4
-video_save_path_folder = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/outputs/
+video_path_file = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/videos/train/0b973c387a034d37bfaec297d4679a97.mp4
+output_path_folder = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/outputs/
 ustunekayit_true_ayriayri_false = True
-right_detection_model = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/models/best_100_1024.pt
+right_detection_model = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/models/best_120_640.pt
+dnn_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/dnn_dataset/
+siamese_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/siamese_dataset/
+yolo_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/yolo_dataset/
 
 [changeable]
 threshold = 0.7
