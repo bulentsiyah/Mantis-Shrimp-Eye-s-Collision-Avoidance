@@ -7,17 +7,27 @@ import sys
 sys.path.append('tools')
 from configmanager import ConfigurationManager
 
-from tools import DrawingOpencv, RightDetection, Utils, ObjectTypes
+from tools import DrawingOpencv, Utils, ObjectTypes
+
+class RightDetection:
+    def __init__(self,risk_situation=False,confidence="0",object_type="None",risk_factor_x_min=0,risk_factor_y_min=0,risk_factor_x_max=0,risk_factor_y_max=0,range_distance=0):
+        self.object_type = object_type
+        self.confidence= confidence
+        self.risk_situation = risk_situation
+        self.risk_factor_x_min = risk_factor_x_min
+        self.risk_factor_y_min = risk_factor_y_min
+        self.risk_factor_x_max = risk_factor_x_max
+        self.risk_factor_y_max = risk_factor_y_max
+        self.range_distance = range_distance
 
 class ContextReturn:
         
     def __init__(self):
         self.frame = None
         self.return_call_time = None
-        self.right_detection = RightDetection(risk_situation=False,confidence="0",object_type="None",risk_factor_x_min=0,risk_factor_y_min=0,risk_factor_x_max=0,risk_factor_y_max=0,range_distance=0)
+        self.right_detection = RightDetection()
         self.method_fps = 0
         
-
 
 class CollisionCalculationContext:
 
@@ -35,8 +45,8 @@ class CollisionCalculationContext:
 
         self.__method_init_time= time.time()
         self.__method_call_number = 0
-        self.context_treshold_fps_frq = 0.100
-        self.__method_last_call_time= time.time()
+        #self.context_treshold_fps_frq = 0.100
+        #self.__method_last_call_time= time.time()
         
         
     def context(self, frame):
@@ -46,16 +56,16 @@ class CollisionCalculationContext:
         self.__method_call_number = self.__method_call_number+1
         
         # Region sana belirli sıklıkta cevap verebilirim
-        temp_diff_time = time.time() - self.__method_last_call_time
+        '''temp_diff_time = time.time() - self.__method_last_call_time
         if temp_diff_time< self.context_treshold_fps_frq:
             if self.context_return.frame is None:
                 self.context_return.frame = frame
             self.context_return.return_call_time= 0
             print("----1 call_frq_time < self.treshold_fps_frq------:",temp_diff_time)
-            return self.context_return
+            return self.context_return'''
 
         
-        self.__method_last_call_time= time.time()
+        #self.__method_last_call_time= time.time()
 
         if self.frame is None:
             print("black pixel")
@@ -65,7 +75,7 @@ class CollisionCalculationContext:
         call_time_for_context_return = time.time() 
         
         # bunu ilerde async task donustur
-        self.frame=self.rightDetection(frame=self.frame)
+        self.frame=self.rightDetectionAnalysis(frame=self.frame)
 
 
         #return hazırlığı
@@ -83,10 +93,10 @@ class CollisionCalculationContext:
         return self.context_return
     
 
-    def rightDetection(self, frame):
+    def rightDetectionAnalysis(self, frame):
 
         try:
-            self.context_return.right_detection= RightDetection(risk_situation=False,confidence="0",object_type="None",risk_factor_x_min=0,risk_factor_y_min=0,risk_factor_x_max=0,risk_factor_y_max=0,range_distance=0)
+            self.context_return.right_detection= RightDetection()
             results = self.right_detection_model.predict(frame, show=False ) # class=[0,2,3]--- hide_labels ---hide_conf
             howmany_haveyougot=results[0].boxes.boxes
 
@@ -110,5 +120,5 @@ class CollisionCalculationContext:
 
             return frame
         except:
-            print("exception: def rightDetection")
+            print("exception: def rightDetectionAnalysis")
             pass

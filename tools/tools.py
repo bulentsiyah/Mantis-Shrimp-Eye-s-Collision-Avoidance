@@ -21,18 +21,6 @@ class ObjectTypes(Enum):
     Flock = 4
     Airborne = 5
 
-@dataclass
-class RightDetection:
-    object_type : str
-    confidence : str
-    risk_situation: bool
-    risk_factor_x_min: float
-    risk_factor_y_min: float
-    risk_factor_x_max: float
-    risk_factor_y_max: float
-    range_distance:float
-
-
 class Utils:
     frame_fps_kac_saniye = 1
     yolo_confidence = 0.5

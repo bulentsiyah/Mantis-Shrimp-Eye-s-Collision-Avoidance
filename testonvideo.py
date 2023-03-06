@@ -35,9 +35,9 @@ class TestOnVideo:
 
         self.drawopencv = DrawingOpencv()
 
-        self.camera_parameters = CameraParameters("amazon_prime_air")
+        self.camera_parameters = CameraParameters("amazon_prime_air_quarter")
 
-        self.videocapture = VideoCapture(camera_parameters=self.camera_parameters, configurationManager=self.configurationManager)
+        self.videocapture = VideoCapture(camera_parameters=self.camera_parameters, configurationManager=self.configurationManager, pure_frame_save=pure_frame_save,vision_frame_save=vision_frame_save)
 
         self.dnn_compare = DNNCompare(configurationManager=self.configurationManager)
 
@@ -83,10 +83,7 @@ class TestOnVideo:
 
             #DNN için işlemler
             if self.context_return.right_detection.object_type != "None":
-                self.dnn_compare.save_dnn_pred(right_detection=copy.deepcopy(self.context_return.right_detection),frame_id=self.videocapture.frame_number,scale=self.videocapture.scale )
-
-
-
+                self.dnn_compare.save_dnn_pred(right_detection=self.context_return.right_detection,frame_id=self.videocapture.frame_number,scale=self.videocapture.scale)
 
             #genel gosterım 
             try:
