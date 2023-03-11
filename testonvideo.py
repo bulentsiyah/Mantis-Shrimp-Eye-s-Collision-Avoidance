@@ -35,11 +35,11 @@ class TestOnVideo:
 
         self.drawopencv = DrawingOpencv()
 
-        self.camera_parameters = CameraParameters("amazon_prime_air_quarter")
+        self.camera_parameters = CameraParameters("amazon_prime_air_half")
 
         self.videocapture = VideoCapture(camera_parameters=self.camera_parameters, configurationManager=self.configurationManager, pure_frame_save=pure_frame_save,vision_frame_save=vision_frame_save)
 
-        self.dnn_compare = DNNCompare(configurationManager=self.configurationManager)
+        self.dnn_compare = DNNCompare(camera_parameters=self.camera_parameters,configurationManager=self.configurationManager)
 
         self.collisioncalculation = CollisionCalculationContext(camera_parameters=self.camera_parameters, configurationManager=self.configurationManager, visual_drawing=True)
 
@@ -101,7 +101,7 @@ class TestOnVideo:
             if main_print_show:
                 print("Video Capture fps rate:","FPS: "+str(self.videocapture.work_time_fps))
 
-        self.dnn_compare.save_dnn_pred_path()
+        self.dnn_compare.save_dnn_pred_path(context_return=self.context_return)
         self.videocapture.all_video_release()
         cv2.destroyAllWindows()
 

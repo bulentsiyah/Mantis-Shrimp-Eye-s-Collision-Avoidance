@@ -12,6 +12,24 @@ import numpy as np
 
 from enum import Enum
 
+
+@dataclass
+class ResultTypes(Enum): # ilk kelime afferım bıldın ıkıncı neyi bıldın?
+    TruePositive = 0 # gercekte var ve sende var demıssın
+    FalseNagative = 1 # gercekte havada helıkopter var o sen yok demıssın--yanıldın
+    FalsePositive = 2  # gercekte havada helıkopter yok o sen var demıssın--yanıldın
+    TrueNegative = 3 # gercekte yok ve sende yok demıssın
+
+
+    '''
+    True Positive: Gerçekte var olan bir nesne doğru olarak sınıflandırılır.
+    False Positive: Gerçekte yok olan bir nesne yanlış olarak var olarak sınıflandırılır.
+    True Negative: Gerçekte yok olan bir nesne doğru olarak yok olarak sınıflandırılır.
+    False Negative: Gerçekte var olan bir nesne yanlış olarak yok olarak sınıflandırılır.
+        
+    '''
+
+
 @dataclass
 class ObjectTypes(Enum):
     Airplane = 0

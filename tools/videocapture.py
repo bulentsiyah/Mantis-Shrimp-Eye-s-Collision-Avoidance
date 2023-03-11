@@ -82,7 +82,7 @@ class VideoCapture:
             temp_save_file = os.path.join(temp_video_folder, temp_video_on_ek+'_output_saa_vision.avi')
             self.vision_frame_save_out = cv2.VideoWriter(temp_save_file,cv2.VideoWriter_fourcc(*'XVID'), self.frame_fps, (self.new_width,self.new_height)) 
 
-        self.__method_init_time= time.time()
+        self.__start_time = time.time()
         self.__method_call_number = 0
         self.method_fps = 0
         
@@ -119,6 +119,7 @@ class VideoCapture:
 
         self.frame_number = self.frame_number + 1
         self.__method_call_number = self.__method_call_number + 1
+
         
         if self.ret == False:
             cv2.destroyAllWindows()
@@ -136,14 +137,13 @@ class VideoCapture:
             self.ret = False
             self.img = None
             return
-            
-        #if self.frame_number % (self.frame_fps*Utils.frame_fps_kac_saniye)  == 0:
-        diff_time = int(time.time()-self.__method_init_time)
-        if diff_time !=0:
-            if diff_time % Utils.frame_fps_kac_saniye  == 0:
-                #self.method_fps  = int((self.frame_fps*Utils.frame_fps_kac_saniye) / (time.time() -self.method_start_time))
-                self.method_fps  = int(self.__method_call_number / diff_time ) 
-                self.__method_call_number = 0
-                self.__method_init_time= time.time()
+        
+
+        end_time = time.time()
+        duration = end_time - self.__start_time
+        if int(duration) % Utils.frame_fps_kac_saniye  == 0:
+            self.method_fps  = int(round(self.__method_call_number / duration) ) 
+            self.__method_call_number =0
+            self.__start_time = time.time()
 
         return self.img
