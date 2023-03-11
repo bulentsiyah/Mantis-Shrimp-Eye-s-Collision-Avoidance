@@ -6,6 +6,7 @@ import cv2
 import time
 from datetime import datetime
 import copy
+import glob
 
 from collisioncalculationcontext import CollisionCalculationContext
 
@@ -109,5 +110,16 @@ class TestOnVideo:
 if __name__ == '__main__':
     
     # coklu oldugu anlasılısa video path setlenebılır
-    test_on_video = TestOnVideo(pure_frame_save=False,vision_frame_save=True)
-    test_on_video.run()
+    configurationManager = ConfigurationManager()
+    video_path = configurationManager.config_changeable['video_path_file']
+    flight_id, ext = os.path.splitext(os.path.basename(video_path))
+    if ext !=".mp4":
+        for mp4_file in glob.iglob(os.path.join(video_path, '*.mp4')):
+            flight_id= os.path.basename(mp4_file)
+            configurationManager.set_video_path_file(video_path_file=str(mp4_file))
+            test_on_video = TestOnVideo(pure_frame_save=False,vision_frame_save=True)
+            test_on_video.run()
+
+    else:
+        test_on_video = TestOnVideo(pure_frame_save=False,vision_frame_save=True)
+        test_on_video.run()

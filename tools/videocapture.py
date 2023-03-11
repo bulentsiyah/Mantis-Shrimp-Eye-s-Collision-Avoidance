@@ -29,7 +29,7 @@ class VideoCapture:
         self.camera_parameters = camera_parameters
 
 
-        video_path = self.configurationManager .config_readable['video_path_file']
+        video_path = self.configurationManager .config_changeable['video_path_file']
 
 
         self.video_capture = cv2.VideoCapture(video_path)

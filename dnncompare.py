@@ -19,7 +19,7 @@ class DNNCompare:
         self.configurationManager = configurationManager
         self.camera_parameters = camera_parameters
 
-        video_path_file= self.configurationManager .config_readable['video_path_file']
+        video_path_file= self.configurationManager .config_changeable['video_path_file']
         self.flight_id, ext = os.path.splitext(os.path.basename(video_path_file))
 
         #ucusun kendı dnn dataframe
@@ -31,7 +31,7 @@ class DNNCompare:
         self.output_folder_flight = os.path.join(self.output_folder+self.flight_id+"/")
         self.path_dnn_pred_dataframe = self.output_folder_flight+'/dnn_pred_dataframe.csv'
 
-        self.dnn_pred_dataframe =pd.read_csv(self.path_dnn_pred_dataframe )
+        self.dnn_pred_dataframe =None
 
         self.list_pred_before_dataframe = []
 

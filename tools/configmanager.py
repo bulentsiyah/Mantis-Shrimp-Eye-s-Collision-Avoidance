@@ -54,3 +54,29 @@ class ConfigurationManager:
         except:
             print("set_last_frame exception")
             return False
+        
+
+    def set_video_path_file(self, video_path_file):
+        """
+        Parameters
+        ------------
+        video_path_file: string - secilen video_path_file degei
+        
+        Returns
+        ------------
+        rtn: Boolean - config verinin yazilma durumu
+        """
+        
+        path_of_the_config_yaml = os.path.dirname(sys.argv[0]) + '/config/config_file.yaml'
+
+        parser = configparser.ConfigParser()
+        parser.read(path_of_the_config_yaml)
+        parser.set('changeable', 'video_path_file', str(video_path_file))
+        try:
+            with open(path_of_the_config_yaml, "w+") as configfile:
+                parser.write(configfile)
+            return True
+
+        except:
+            print("set_last_frame exception")
+            return False
