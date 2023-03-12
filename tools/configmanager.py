@@ -23,7 +23,7 @@ class ConfigurationManager:
         config_changeable : configparser - config degistirilebilir blogu
         """
 
-        path_of_the_config_yaml = os.path.dirname(sys.argv[0]) + '/config/config_file.yaml'
+        path_of_the_config_yaml = './config/config_file.yaml'
         config_f1 =configparser.ConfigParser()
         config_f1.read(path_of_the_config_yaml)
         config_readable = config_f1['readable']
