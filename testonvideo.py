@@ -92,7 +92,10 @@ class TestOnVideo:
                 new_width = int(self.camera_parameters.width / scale)
                 new_height = int( self.camera_parameters.height / scale)
                 frame_show = cv2.resize(frame, (new_width, new_height))'''
-                cv2.imshow(self.cv_imshow_title,  cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+
+                imshow = False
+                if imshow:
+                    cv2.imshow(self.cv_imshow_title,  cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
             except:
                 print("main exception")
                 pass

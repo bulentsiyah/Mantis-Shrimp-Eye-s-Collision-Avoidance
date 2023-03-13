@@ -109,7 +109,7 @@ class DNNCompare:
         dnn_pred_dataframe_frame_id= self.dnn_pred_dataframe['frame_id'].tolist() 
         dnn_pred_dataframe_frame_id = [ int(x) for x in dnn_pred_dataframe_frame_id ]
 
-        main_list = flight_dnn_dataframe_frame_id
+        main_list = copy.deepcopy(flight_dnn_dataframe_frame_id)
 
         for element in dnn_pred_dataframe_frame_id:
             element = int(element)

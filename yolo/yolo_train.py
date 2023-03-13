@@ -15,15 +15,19 @@ if __name__ == '__main__':
     data = configurationManager.config_readable['yolo_dataset']+"/custom.yaml"
     last_weights = configurationManager.config_readable['right_detection_model']
 
+    epoch = 10
+    imgsz = 1024
+    last_folder = "best_"+str(350+epoch)+"_" + str(imgsz)
+
     # Load a model
     model = YOLO(last_weights)  # load a pretrained model (recommended for training)
 
     # Train the model
     results = model.train(
     data=data,
-    imgsz=1024,
-    epochs=1,
+    imgsz=imgsz,
+    epochs=epoch,
     batch=8,
-    name='yolov8x_custom_imgsz_1024',
+    name=last_folder,
     device=0
     )

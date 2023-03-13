@@ -2,12 +2,12 @@
 cv_imshow_title = Mantis-Shrimp-Eye-s-Collision-Avoidance
 output_path_folder = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/outputs/
 ustunekayit_true_ayriayri_false = True
-right_detection_model = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/models/best_250_1024.pt
+right_detection_model = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/models/best_350_1024.pt
 dnn_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/dnn_dataset/
 siamese_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/siamese_dataset/
 yolo_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/yolo_dataset/
 
 [changeable]
 threshold = 0.7
-video_path_file = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/videos/train\0001ba865c8e410e88609541b8f55ffc.mp4
+video_path_file = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/videos/train\0549a857cc834398b2346fc09fda508f.mp4
 
