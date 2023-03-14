@@ -26,6 +26,8 @@ class TestOnVideo:
     def __init__(self,pure_frame_save=False,vision_frame_save=True, test_id=""):
 
         self.configurationManager = ConfigurationManager()
+
+        self.drawing_opencv=  DrawingOpencv()
         #agr fonksıyonları kullanmak ıcın
         threshold = self.configurationManager.config_changeable['threshold']
         parser = argparse.ArgumentParser()
@@ -46,9 +48,6 @@ class TestOnVideo:
         self.context_return = None
 
         self.threadTrueNormalFalse = False
-
-
-        
 
 
     def myfunc(self, frame,frame_number):
@@ -75,13 +74,11 @@ class TestOnVideo:
                 t.start()
             else:
                 self.context_return = self.collisioncalculation.context(frame=frame)
-                
-            
             
             #collison işimiz bitti
             frame= self.context_return.frame
             #self.drawopencv.drawing_frame_number_text(frame, self.videocapture.frame_number, context_return.method_fps)
-            DrawingOpencv.drawing_frame_number_text(frame, self.videocapture.frame_number, self.videocapture.method_fps)
+            self.drawing_opencv.drawing_frame_number_text(frame, self.videocapture.frame_number, self.videocapture.method_fps)
             # işlenmiş halini kaydetmek istersen kaydet
             
 
@@ -91,13 +88,14 @@ class TestOnVideo:
 
             #genel gosterım 
             try:
-                white_image = DrawingOpencv.main_print_show(frame=frame, deepcopy_frame=deepcopy_frame, camera_parameters=self.camera_parameters, right_detection=self.context_return.right_detection)
+                white_image = self.drawing_opencv.main_print_show(frame=frame, deepcopy_frame=deepcopy_frame, camera_parameters=self.camera_parameters, right_detection=self.context_return.right_detection)
                 cv2.imshow(self.cv_imshow_title,  cv2.cvtColor(white_image, cv2.COLOR_RGB2BGR))
+                self.videocapture.save_vision_frame_save(frame=white_image)
             except:
                 print("main exception")
                 pass
             
-            self.videocapture.save_vision_frame_save(frame=white_image)
+            
 
             main_print_show = False
             if main_print_show:

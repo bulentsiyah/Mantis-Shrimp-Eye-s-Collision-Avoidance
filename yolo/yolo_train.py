@@ -1,19 +1,26 @@
 from ultralytics import YOLO
 import torch
 
-import sys
-sys.path.append('tools')
-from configmanager import ConfigurationManager
+
+try:
+    import sys
+    sys.path.append('tools')
+    from configmanager import ConfigurationManager
+except:
+    pass
 
 
 if __name__ == '__main__':
     print('cuda_avail:', torch.cuda.is_available())
     print('cuda_device:', torch.cuda.device_count())
 
-    configurationManager =  ConfigurationManager()
-
-    data = configurationManager.config_readable['yolo_dataset']+"/custom.yaml"
-    last_weights = configurationManager.config_readable['right_detection_model']
+    try:
+        configurationManager =  ConfigurationManager()
+        data = configurationManager.config_readable['yolo_dataset']+"/custom.yaml"
+        last_weights = configurationManager.config_readable['right_detection_model']
+    except:
+        data = "../../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/yolo_dataset/custom.yaml"
+        last_weights = "../../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/models/best_350_1024.pt"
 
     epoch = 10
     imgsz = 1024

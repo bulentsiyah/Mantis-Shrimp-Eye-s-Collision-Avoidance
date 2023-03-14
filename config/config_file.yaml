@@ -9,5 +9,5 @@ yolo_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/yolo_datas
 
 [changeable]
 threshold = 0.7
-video_path_file = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/videos/train\036edfd6ece44c37b8ca9562fd701682.mp4
+video_path_file = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/videos/train\02a8b666e30848c890d719c8c37ade9b.mp4
 

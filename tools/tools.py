@@ -77,12 +77,21 @@ class DrawingOpencv:
     left_section = ["Motion Detection", "Siamese", "Kalman"]
     right_section = ["Object Detection", "DNN", "RNN"]
 
+    '''left_section_color = [ (0, 0, 255), (65, 105, 225), (30, 144, 255)]
+    right_section_color = [(255, 0, 0), (220, 20, 60), (255, 69, 0)]'''
+
+    left_section_color = [ (255, 165, 0),(128, 0, 128), (0, 128, 128)]
+    right_section_color = [ (255, 0, 0),  (0, 255, 0), (0, 0, 255)]
+
+
+    #right_detection_image = np.zeros((right_part_height, int(her_blogun_genisligi_w), 3), dtype=np.uint8) * 255
+
     def __init__(self):
-        pass
+        
+        self.right_detection_image = None #np.zeros((right_part_height, int(her_blogun_genisligi_w), 3), dtype=np.uint8) * 255
+        
 
-
-    @staticmethod
-    def main_print_show(frame, deepcopy_frame,camera_parameters, right_detection):
+    def main_print_show(self,frame, deepcopy_frame,camera_parameters, right_detection):
         imshow = True
         if imshow:
 
@@ -106,61 +115,71 @@ class DrawingOpencv:
             right_parts = 3
             right_part_height = int(white_image_h / right_parts)
 
+            if self.right_detection_image is None:
+                self.right_detection_image = np.zeros((right_part_height, int(her_blogun_genisligi_w), 3), dtype=np.uint8) * 255
 
-            right_detection_image = np.zeros((right_part_height, int(her_blogun_genisligi_w), 3), dtype=np.uint8) * 255
 
             try:
                 if right_detection.object_type != "None":
                     start_point_min_y = int(right_detection.risk_factor_y_min)
                     start_point_max_y = int(right_detection.risk_factor_y_max)
-                    diff_start_point_w = start_point_max_y - start_point_min_y
-                    start_point_center_y = int((start_point_min_y+start_point_max_y)/2)
-                    start_point_min_y = int(start_point_center_y - (right_part_height/2))
-                    start_point_max_y =  int(start_point_min_y + right_part_height)
-
                     end_point_min_x = int(right_detection.risk_factor_x_min)
                     end_point_max_x =int(right_detection.risk_factor_x_max)
-                    diff_end_point_w = end_point_min_x - end_point_max_x
-                    end_point_center_y = int((end_point_min_x+end_point_max_x)/2)
-                    end_point_min_x = int(end_point_center_y - (her_blogun_genisligi_w/2))
-                    end_point_max_x =  int(end_point_min_x +her_blogun_genisligi_w)
-                    
-                    right_detection_image = deepcopy_frame[start_point_min_y:start_point_max_y,end_point_min_x:end_point_max_x ] 
+                    self.right_detection_image = deepcopy_frame[start_point_min_y:start_point_max_y,end_point_min_x:end_point_max_x ] 
 
-                    zoom = 3
-                    if diff_start_point_w <her_blogun_genisligi_w/3:
+
+                    diff_start_point_w = start_point_max_y - start_point_min_y
+
+                    try:
+                        
+                        start_point_center_y = int((start_point_min_y+start_point_max_y)/2)
+                        start_point_min_y = int(start_point_center_y - (right_part_height/2))
+                        start_point_max_y =  int(start_point_min_y + right_part_height)
+
+                        diff_end_point_w = end_point_min_x - end_point_max_x
+                        end_point_center_y = int((end_point_min_x+end_point_max_x)/2)
+                        end_point_min_x = int(end_point_center_y - (her_blogun_genisligi_w/2))
+                        end_point_max_x =  int(end_point_min_x +her_blogun_genisligi_w)
+                        
+                        self.right_detection_image = deepcopy_frame[start_point_min_y:start_point_max_y,end_point_min_x:end_point_max_x ] 
+                    except:
+                        pass
+
+
+                    try:
                         zoom = 3
-                    elif diff_start_point_w <her_blogun_genisligi_w/2:
-                        zoom = 2
-                    elif diff_start_point_w <her_blogun_genisligi_w:
-                        zoom = 2.5
+                        if diff_start_point_w <=10:
+                            zoom = 5
+                        elif diff_start_point_w <=15:
+                            zoom = 4.5
+                        elif diff_start_point_w <=20:
+                            zoom = 4
+                        elif diff_start_point_w <=25:
+                            zoom = 3.5
 
+                        # resmin yüksekliği ve genişliği
+                        h, w = self.right_detection_image.shape[:2]
+                        # merkez noktasını hesapla
+                        center = (w//2, h//2)
+                        # yeni boyutları hesapla
+                        new_h, new_w = int(h * zoom), int(w * zoom)
 
-                    # resmin yüksekliği ve genişliği
-                    h, w = right_detection_image.shape[:2]
+                        # yeniden boyutlandır
+                        resized = cv2.resize(self.right_detection_image, (new_w, new_h))
 
-                    # merkez noktasını hesapla
-                    center = (w//2, h//2)
+                        # yeni boyutlu resmin merkezini hesapla
+                        x, y = (new_w//2, new_h//2)
 
-                    # zoom oranı
-                    
+                        # resmi kes
+                        x1, y1 = x - center[0], y - center[1]
+                        x2, y2 = x1 + w, y1 + h
+                        resized = resized[y1:y2, x1:x2]
 
-                    # yeni boyutları hesapla
-                    new_h, new_w = int(h * zoom), int(w * zoom)
+                        # orijinal boyutlara döndür
+                        self.right_detection_image = cv2.resize(resized, (w, h))
 
-                    # yeniden boyutlandır
-                    resized = cv2.resize(right_detection_image, (new_w, new_h))
-
-                    # yeni boyutlu resmin merkezini hesapla
-                    x, y = (new_w//2, new_h//2)
-
-                    # resmi kes
-                    x1, y1 = x - center[0], y - center[1]
-                    x2, y2 = x1 + w, y1 + h
-                    resized = resized[y1:y2, x1:x2]
-
-                    # orijinal boyutlara döndür
-                    right_detection_image = cv2.resize(resized, (w, h))
+                    except:
+                        pass
             except:
                 pass
             
@@ -170,7 +189,7 @@ class DrawingOpencv:
                 end_point = (her_blogun_genisligi_w, (i+1) * left_part_height)
                 
                 thickness = 2
-                color = DrawingOpencv.color_blue
+                color = DrawingOpencv.left_section_color[i] #DrawingOpencv.color_blue
                 white_image = cv2.rectangle(white_image, start_point, end_point, color, thickness)
 
                 center_x = 5+int(start_point[0])#int((start_point[0]+end_point[0])/2)
@@ -185,9 +204,14 @@ class DrawingOpencv:
                 end_point = (white_image_w, (i+1) * right_part_height)
 
                 if i ==0:
-                    white_image[start_point[1]:end_point[1], start_point[0]:end_point[0]] = right_detection_image
+                    try:
+                        h, w = self.right_detection_image.shape[:2]
+                        white_image[start_point[1]:start_point[1]+h, start_point[0]:start_point[0]+w] = self.right_detection_image
+                    except:
+                        print("for i in range(right_parts): i 0")
+                        pass
 
-                color = DrawingOpencv.color_red
+                color = DrawingOpencv.right_section_color[i]  #color_red
                 thickness = 2
                 white_image = cv2.rectangle(white_image, start_point, end_point, color, thickness)
 
