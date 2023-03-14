@@ -80,7 +80,11 @@ class VideoCapture:
         self.vision_frame_save = vision_frame_save
         if self.vision_frame_save:
             temp_save_file = os.path.join(temp_video_folder, temp_video_on_ek+'_output_saa_vision.avi')
-            self.vision_frame_save_out = cv2.VideoWriter(temp_save_file,cv2.VideoWriter_fourcc(*'XVID'), self.frame_fps, (self.new_width,self.new_height)) 
+            #self.vision_frame_save_out = cv2.VideoWriter(temp_save_file,cv2.VideoWriter_fourcc(*'XVID'), self.frame_fps, (self.new_width,self.new_height)) 
+            
+            scale = int(self.new_width * 1.4) / self.new_width
+            new_height = int(self.new_height / scale)
+            self.vision_frame_save_out = cv2.VideoWriter(temp_save_file,cv2.VideoWriter_fourcc(*'XVID'), self.frame_fps, (self.new_width,new_height)) 
 
         self.__start_time = time.time()
         self.__method_call_number = 0
@@ -117,6 +121,8 @@ class VideoCapture:
         """
         self.ret, self.img = self.video_capture.read()
 
+        
+
         self.frame_number = self.frame_number + 1
         self.__method_call_number = self.__method_call_number + 1
 
@@ -126,6 +132,8 @@ class VideoCapture:
             self.img = None
             return
         
+        
+
         if self.frame_width != self.camera_parameters.width:
             if self.resizing:
                 self.img = cv2.resize(self.img, (self.new_width, self.new_height))

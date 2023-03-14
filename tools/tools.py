@@ -13,6 +13,7 @@ import numpy as np
 from enum import Enum
 
 
+
 @dataclass
 class ResultTypes(Enum): # ilk kelime afferım bıldın ıkıncı neyi bıldın?
     TruePositive = 0 # gercekte var ve sende var demıssın
@@ -69,9 +70,143 @@ class DrawingOpencv:
     color_red = (255, 0, 0) #red
     color_pink = (240, 131, 244) #pink
     color_green = (7, 216, 17) #green
+    color_red_bgr = (0, 0, 255)  # BGR formatında renk seçimi
+    color_blue_bgr = (255, 0, 0)  # BGR formatında renk seçimi
+
+
+    left_section = ["Motion Detection", "Siamese", "Kalman"]
+    right_section = ["Object Detection", "DNN", "RNN"]
 
     def __init__(self):
         pass
+
+
+    @staticmethod
+    def main_print_show(frame, deepcopy_frame,camera_parameters, right_detection):
+        imshow = True
+        if imshow:
+
+            frame_w = frame.shape[1]
+            frame_h= frame.shape[0]
+            # Beyaz bir resim oluştur (%40 daha geniş)
+            white_image = np.zeros((frame_h, int(frame_w * 1.4), 3), dtype=np.uint8) * 255
+
+            white_image_h = white_image.shape[0]
+            white_image_w = white_image.shape[1]
+
+            # Siyah resmi beyaz resmin tam ortasına kopyala
+            x_offset = int((white_image_w - frame_w) / 2)
+            y_offset = int((white_image_h - frame_h) / 2)
+            white_image[y_offset:y_offset+frame_h, x_offset:x_offset+frame_w] = frame
+
+            her_blogun_genisligi_w = int((white_image_w-frame_w)/2)
+            left_parts = 3
+            left_part_height = int(white_image_h / left_parts)
+
+            right_parts = 3
+            right_part_height = int(white_image_h / right_parts)
+
+
+            right_detection_image = np.zeros((right_part_height, int(her_blogun_genisligi_w), 3), dtype=np.uint8) * 255
+
+            try:
+                if right_detection.object_type != "None":
+                    start_point_min_y = int(right_detection.risk_factor_y_min)
+                    start_point_max_y = int(right_detection.risk_factor_y_max)
+                    diff_start_point_w = start_point_max_y - start_point_min_y
+                    start_point_center_y = int((start_point_min_y+start_point_max_y)/2)
+                    start_point_min_y = int(start_point_center_y - (right_part_height/2))
+                    start_point_max_y =  int(start_point_min_y + right_part_height)
+
+                    end_point_min_x = int(right_detection.risk_factor_x_min)
+                    end_point_max_x =int(right_detection.risk_factor_x_max)
+                    diff_end_point_w = end_point_min_x - end_point_max_x
+                    end_point_center_y = int((end_point_min_x+end_point_max_x)/2)
+                    end_point_min_x = int(end_point_center_y - (her_blogun_genisligi_w/2))
+                    end_point_max_x =  int(end_point_min_x +her_blogun_genisligi_w)
+                    
+                    right_detection_image = deepcopy_frame[start_point_min_y:start_point_max_y,end_point_min_x:end_point_max_x ] 
+
+                    zoom = 3
+                    if diff_start_point_w <her_blogun_genisligi_w/3:
+                        zoom = 3
+                    elif diff_start_point_w <her_blogun_genisligi_w/2:
+                        zoom = 2
+                    elif diff_start_point_w <her_blogun_genisligi_w:
+                        zoom = 2.5
+
+
+                    # resmin yüksekliği ve genişliği
+                    h, w = right_detection_image.shape[:2]
+
+                    # merkez noktasını hesapla
+                    center = (w//2, h//2)
+
+                    # zoom oranı
+                    
+
+                    # yeni boyutları hesapla
+                    new_h, new_w = int(h * zoom), int(w * zoom)
+
+                    # yeniden boyutlandır
+                    resized = cv2.resize(right_detection_image, (new_w, new_h))
+
+                    # yeni boyutlu resmin merkezini hesapla
+                    x, y = (new_w//2, new_h//2)
+
+                    # resmi kes
+                    x1, y1 = x - center[0], y - center[1]
+                    x2, y2 = x1 + w, y1 + h
+                    resized = resized[y1:y2, x1:x2]
+
+                    # orijinal boyutlara döndür
+                    right_detection_image = cv2.resize(resized, (w, h))
+            except:
+                pass
+            
+            # Sol tarafı 3 eşit parçaya ayırıyoruz
+            for i in range(left_parts):
+                start_point = (0, i * left_part_height)
+                end_point = (her_blogun_genisligi_w, (i+1) * left_part_height)
+                
+                thickness = 2
+                color = DrawingOpencv.color_blue
+                white_image = cv2.rectangle(white_image, start_point, end_point, color, thickness)
+
+                center_x = 5+int(start_point[0])#int((start_point[0]+end_point[0])/2)
+                center_y = 20+int(start_point[1])
+                cv2.putText(white_image, DrawingOpencv.left_section[i], (center_x, center_y), cv2.FONT_HERSHEY_SIMPLEX, 1.0/2, color, thickness)
+                
+
+            # Sağ tarafı da 3 eşit parçaya ayırıyoruz
+            for i in range(right_parts):
+
+                start_point = (white_image_w-her_blogun_genisligi_w, i * right_part_height)
+                end_point = (white_image_w, (i+1) * right_part_height)
+
+                if i ==0:
+                    white_image[start_point[1]:end_point[1], start_point[0]:end_point[0]] = right_detection_image
+
+                color = DrawingOpencv.color_red
+                thickness = 2
+                white_image = cv2.rectangle(white_image, start_point, end_point, color, thickness)
+
+                center_x = 5+int(start_point[0])#int((start_point[0]+end_point[0])/2)
+                center_y = 20+int(start_point[1])
+                cv2.putText(white_image, DrawingOpencv.right_section[i], (center_x, center_y), cv2.FONT_HERSHEY_SIMPLEX, 1.0/2, color, thickness)
+
+
+            scale = white_image_w / camera_parameters.width
+            new_width = camera_parameters.width
+            new_height = int(white_image_h / scale)
+
+            white_image = cv2.resize(white_image, (new_width, new_height))
+            
+            
+
+            return white_image
+
+
 
 
     @staticmethod
@@ -213,8 +348,8 @@ class DrawingOpencv:
         color = [i * 255 for i in color]
 
         x1_y1_text_padding = (x1_y1[0], x1_y1[1]-5)
-        cv2.putText(frame, str(class_id), x1_y1_text_padding, cv2.FONT_HERSHEY_COMPLEX_SMALL, DrawingOpencv.line_thick, color, 1, cv2.LINE_AA)
-        cv2.rectangle(frame, x1_y1, x2_y2, color, 1)
+        cv2.putText(frame, str(class_id), x1_y1_text_padding, cv2.FONT_HERSHEY_COMPLEX_SMALL, DrawingOpencv.line_thick, DrawingOpencv.color_red, 1, cv2.LINE_AA)
+        cv2.rectangle(frame, x1_y1, x2_y2, DrawingOpencv.color_red, 1)
 
     @staticmethod
     def opencv_put_text(frame, string_text):

@@ -7,6 +7,7 @@ import time
 from datetime import datetime
 import copy
 import glob
+import numpy as np
 
 from collisioncalculationcontext import CollisionCalculationContext
 
@@ -34,8 +35,6 @@ class TestOnVideo:
 
         self.cv_imshow_title = self.configurationManager.config_readable['cv_imshow_title']
 
-        self.drawopencv = DrawingOpencv()
-
         self.camera_parameters = CameraParameters("amazon_prime_air_half")
 
         self.videocapture = VideoCapture(camera_parameters=self.camera_parameters, configurationManager=self.configurationManager, pure_frame_save=pure_frame_save,vision_frame_save=vision_frame_save)
@@ -49,6 +48,9 @@ class TestOnVideo:
         self.threadTrueNormalFalse = False
 
 
+        
+
+
     def myfunc(self, frame,frame_number):
         self.context_return = self.collisioncalculation.context(frame= frame, frame_number=frame_number)
 
@@ -60,7 +62,7 @@ class TestOnVideo:
 
         while True:
             frame = self.videocapture.get_image()
-
+            deepcopy_frame = copy.deepcopy(frame)
             if (self.videocapture.ret == False):
                 break
 
@@ -72,15 +74,16 @@ class TestOnVideo:
                 t = Thread(target=self.myfunc, args=(frame, self.videocapture.frame_number,))
                 t.start()
             else:
-                self.context_return = self.collisioncalculation.context(frame=copy.deepcopy(frame))
+                self.context_return = self.collisioncalculation.context(frame=frame)
                 
             
-            #coolison işimiz bitti
+            
+            #collison işimiz bitti
             frame= self.context_return.frame
             #self.drawopencv.drawing_frame_number_text(frame, self.videocapture.frame_number, context_return.method_fps)
-            self.drawopencv.drawing_frame_number_text(frame, self.videocapture.frame_number, self.videocapture.method_fps)
+            DrawingOpencv.drawing_frame_number_text(frame, self.videocapture.frame_number, self.videocapture.method_fps)
             # işlenmiş halini kaydetmek istersen kaydet
-            self.videocapture.save_vision_frame_save(frame=frame)
+            
 
             #DNN için işlemler
             if self.context_return.right_detection.object_type != "None":
@@ -88,18 +91,13 @@ class TestOnVideo:
 
             #genel gosterım 
             try:
-                '''scale = 2.0
-                new_width = int(self.camera_parameters.width / scale)
-                new_height = int( self.camera_parameters.height / scale)
-                frame_show = cv2.resize(frame, (new_width, new_height))'''
-
-                imshow = False
-                if imshow:
-                    cv2.imshow(self.cv_imshow_title,  cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+                white_image = DrawingOpencv.main_print_show(frame=frame, deepcopy_frame=deepcopy_frame, camera_parameters=self.camera_parameters, right_detection=self.context_return.right_detection)
+                cv2.imshow(self.cv_imshow_title,  cv2.cvtColor(white_image, cv2.COLOR_RGB2BGR))
             except:
                 print("main exception")
                 pass
-
+            
+            self.videocapture.save_vision_frame_save(frame=white_image)
 
             main_print_show = False
             if main_print_show:
@@ -108,6 +106,7 @@ class TestOnVideo:
         self.dnn_compare.save_dnn_pred_path(context_return=self.context_return)
         self.videocapture.all_video_release()
         cv2.destroyAllWindows()
+
 
 
 if __name__ == '__main__':

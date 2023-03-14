@@ -121,7 +121,7 @@ class CollisionCalculationContext:
                 if confidence >= Utils.yolo_confidence:
                     right_detection=RightDetection(risk_situation=True,confidence=str(confidence),object_type=enum_value,risk_factor_x_min=float(x1),risk_factor_y_min=float(y1),risk_factor_x_max=float(x2),risk_factor_y_max=float(y2), range_distance=0)
                     if self.visual_drawing:
-                        DrawingOpencv.drawing_rectangle(frame, class_id, (x1,y1), (x2,y2))
+                        DrawingOpencv.drawing_rectangle(frame, enum_value, (x1,y1), (x2,y2))
                         # cv2.imwrite("test.png", cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
                         
 
