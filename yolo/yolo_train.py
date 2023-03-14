@@ -20,7 +20,7 @@ if __name__ == '__main__':
         last_weights = configurationManager.config_readable['right_detection_model']
     except:
         data = "../../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/yolo_dataset/custom.yaml"
-        last_weights = "../../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/models/best_350_1024.pt"
+        last_weights = "../../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/models/best_360_1024.pt"
 
     epoch = 10
     imgsz = 1024

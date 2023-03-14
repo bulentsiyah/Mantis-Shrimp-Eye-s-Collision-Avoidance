@@ -2,7 +2,7 @@
 cv_imshow_title = Collision Avoidance with Mantis Shrimp Eyes
 output_path_folder = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/outputs/
 ustunekayit_true_ayriayri_false = True
-right_detection_model = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/models/best_350_1024.pt
+right_detection_model = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/models/best_360_1024.pt
 dnn_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/dnn_dataset/
 siamese_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/siamese_dataset/
 yolo_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/yolo_dataset/
