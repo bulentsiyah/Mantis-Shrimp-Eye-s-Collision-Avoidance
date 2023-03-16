@@ -3,6 +3,8 @@ import time
 from ultralytics import YOLO
 import cv2
 
+from distanceclass import DistanceClass
+
 import sys
 sys.path.append('tools')
 from configmanager import ConfigurationManager
@@ -50,6 +52,8 @@ class CollisionCalculationContext:
         self.__method_fps = 0
 
         self.__run_rightDetectionAnalysis= True
+
+        self.distance_class = DistanceClass(dnn_distance_model=self.configurationManager.config_readable['dnn_distance_model'], models_path_folder=self.configurationManager.config_readable['models_path_folder'])
         
         
     def context(self, frame):
@@ -81,6 +85,8 @@ class CollisionCalculationContext:
             frame, right_detection=self.rightDetectionAnalysis(frame=self.frame)
             self.context_return.frame = frame
             self.context_return.right_detection = right_detection
+
+            
 
         end_time = time.time()
         duration = end_time - self.__start_time
@@ -116,16 +122,21 @@ class CollisionCalculationContext:
                 confidence=float(confidence)
                 class_id=int(class_id)
 
+                range_distance = 0
+
                 enum_value = ObjectTypes(class_id).name
 
                 if confidence >= Utils.yolo_confidence:
-                    right_detection=RightDetection(risk_situation=True,confidence=str(confidence),object_type=enum_value,risk_factor_x_min=float(x1),risk_factor_y_min=float(y1),risk_factor_x_max=float(x2),risk_factor_y_max=float(y2), range_distance=0)
+                    range_distance  = self.distance_class.distance_single_prediction(xmin=x1,ymin=y1,xmax=x2,ymax=y2,width=x2-x1,height=y2-y1,class_type=class_id)
+                    range_distance = range_distance + (-250)
+                    right_detection=RightDetection(risk_situation=True,confidence=str(confidence),object_type=enum_value,risk_factor_x_min=float(x1),risk_factor_y_min=float(y1),risk_factor_x_max=float(x2),risk_factor_y_max=float(y2), range_distance=range_distance)
                     if self.visual_drawing:
                         DrawingOpencv.drawing_rectangle(frame, enum_value, (x1,y1), (x2,y2))
                         # cv2.imwrite("test.png", cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
                         
 
             return frame, right_detection
-        except:
+        except Exception as e:
+            print(f'caught {type(e)}: e')
             print("exception: def rightDetectionAnalysis")
             pass

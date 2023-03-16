@@ -1,11 +1,15 @@
 [readable]
 cv_imshow_title = Collision Avoidance with Mantis Shrimp Eyes
-output_path_folder = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/outputs/
 ustunekayit_true_ayriayri_false = True
-right_detection_model = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/models/best_360_1024.pt
+ana_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/
+output_path_folder = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/outputs/
+models_path_folder = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/models/
 dnn_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/dnn_dataset/
 siamese_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/siamese_dataset/
 yolo_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/yolo_dataset/
+right_detection_model = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/models/best_360_1024.pt
+dnn_rnn_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/rnn_dataset/
+dnn_distance_model = model_20230316-164852
 
 [changeable]
 threshold = 0.7

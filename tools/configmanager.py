@@ -42,6 +42,7 @@ class ConfigurationManager:
         """
         
         path_of_the_config_yaml = os.path.dirname(sys.argv[0]) + '/config/config_file.yaml'
+        #path_of_the_config_yaml =  './config/config_file.yaml'
 
         parser = configparser.ConfigParser()
         parser.read(path_of_the_config_yaml)

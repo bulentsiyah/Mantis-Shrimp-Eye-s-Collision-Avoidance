@@ -74,8 +74,8 @@ class DrawingOpencv:
     color_blue_bgr = (255, 0, 0)  # BGR formatında renk seçimi
 
 
-    left_section = ["Motion Detection", "Siamese", "Kalman"]
-    right_section = ["Object Detection", "DNN", "RNN"]
+    left_section = ["CV: Motion Detection", "Siamese: Similarity", "CV:Kalman"]
+    right_section = ["CNN: Object Detection", "DNN: Distance", "RNN: Direction"]
 
     '''left_section_color = [ (0, 0, 255), (65, 105, 225), (30, 144, 255)]
     right_section_color = [(255, 0, 0), (220, 20, 60), (255, 69, 0)]'''
@@ -203,13 +203,6 @@ class DrawingOpencv:
                 start_point = (white_image_w-her_blogun_genisligi_w, i * right_part_height)
                 end_point = (white_image_w, (i+1) * right_part_height)
 
-                if i ==0:
-                    try:
-                        h, w = self.right_detection_image.shape[:2]
-                        white_image[start_point[1]:start_point[1]+h, start_point[0]:start_point[0]+w] = self.right_detection_image
-                    except:
-                        print("for i in range(right_parts): i 0")
-                        pass
 
                 color = DrawingOpencv.right_section_color[i]  #color_red
                 thickness = 2
@@ -218,6 +211,27 @@ class DrawingOpencv:
                 center_x = 5+int(start_point[0])#int((start_point[0]+end_point[0])/2)
                 center_y = 20+int(start_point[1])
                 cv2.putText(white_image, DrawingOpencv.right_section[i], (center_x, center_y), cv2.FONT_HERSHEY_SIMPLEX, 1.0/2, color, thickness)
+
+                if i ==0:
+                    try:
+                        h, w = self.right_detection_image.shape[:2]
+                        white_image[start_point[1]:start_point[1]+h, start_point[0]:start_point[0]+w] = self.right_detection_image
+                    except:
+                        print("for i in range(right_parts): i 0")
+                        pass
+
+                if i==1:
+                    try:
+                        center_x = center_x
+                        center_y = center_y + 50
+                        text = str(right_detection.range_distance)
+                        cv2.putText(white_image, text, (center_x, center_y), cv2.FONT_HERSHEY_SIMPLEX, 1.0/2, color, thickness)
+                    except:
+                        print("for i in range(right_parts): i 1")
+                        pass
+
+
+                
 
 
             scale = white_image_w / camera_parameters.width
