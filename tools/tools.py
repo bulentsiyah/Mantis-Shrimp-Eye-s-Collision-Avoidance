@@ -75,7 +75,7 @@ class DrawingOpencv:
 
 
     left_section = ["CV: Motion Detection", "Siamese: Similarity", "CV:Kalman"]
-    right_section = ["CNN: Object Detection", "DNN: Distance", "RNN: Direction"]
+    right_section = ["CNN: Object Detection", "DNN: Distance", "RNN: Trajectory"]
 
     '''left_section_color = [ (0, 0, 255), (65, 105, 225), (30, 144, 255)]
     right_section_color = [(255, 0, 0), (220, 20, 60), (255, 69, 0)]'''

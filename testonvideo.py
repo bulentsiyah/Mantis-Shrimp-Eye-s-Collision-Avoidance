@@ -95,8 +95,6 @@ class TestOnVideo:
                 print("main exception")
                 pass
             
-            
-
             main_print_show = False
             if main_print_show:
                 print("Video Capture fps rate:","FPS: "+str(self.videocapture.work_time_fps))

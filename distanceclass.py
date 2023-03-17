@@ -7,25 +7,31 @@ from keras.models import model_from_json,Model, load_model
 from keras.layers import Dense, Input, Activation, BatchNormalization,Add,Dropout
 import matplotlib.pyplot as plt
 
+import sys
+sys.path.append('tools')
+from configmanager import ConfigurationManager
+
 class DistanceClass:
 
-    def __init__(self, dnn_distance_model=None, models_path_folder=None):
+    def __init__(self, configurationManager):
 
-        self.path = models_path_folder
-        self.model = dnn_distance_model
+        self.configurationManager = configurationManager
+
+        self.models_path_folder=self.configurationManager.config_readable['models_path_folder']
+        self.dnn_distance_model=self.configurationManager.config_readable['dnn_distance_model']
 
         # load weights into new model
-        json_file = open(self.path+'dnn/{}.json'.format(self.model), 'r')
+        json_file = open(self.models_path_folder+'dnn/{}.json'.format(self.dnn_distance_model), 'r')
         loaded_model_json = json_file.read()
         json_file.close()
-        self.loaded_model = model_from_json( loaded_model_json )
-        model_path = self.path+"dnn/{}.h5".format(self.model)
+        self.loaded_model = model_from_json(loaded_model_json)
+        model_path = self.models_path_folder+"dnn/{}.h5".format(self.dnn_distance_model)
         self.loaded_model.load_weights(model_path)
-        print("Loaded model from disk")
+        print("Loaded Dnn model from disk")
 
-        self.scalar_X = joblib.load(self.path+"dnn/xtrain_scaler.save")
+        self.scalar_X = joblib.load(self.models_path_folder+"dnn/xtrain_scaler.save")
         
-        self.scalar_y = joblib.load(self.path+"dnn/ytrain_scaler.save")
+        self.scalar_y = joblib.load(self.models_path_folder+"dnn/ytrain_scaler.save")
 
         
     def distance_single_prediction(self,xmin, ymin, xmax, ymax, width,height,class_type):

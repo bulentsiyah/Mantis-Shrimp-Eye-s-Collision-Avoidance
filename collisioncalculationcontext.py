@@ -4,6 +4,8 @@ from ultralytics import YOLO
 import cv2
 
 from distanceclass import DistanceClass
+from rnnclass import RNNClass
+from collections import deque
 
 import sys
 sys.path.append('tools')
@@ -12,7 +14,7 @@ from configmanager import ConfigurationManager
 from tools import DrawingOpencv, Utils, ObjectTypes
 
 class RightDetection:
-    def __init__(self,risk_situation=False,confidence="0",object_type="None",risk_factor_x_min=0,risk_factor_y_min=0,risk_factor_x_max=0,risk_factor_y_max=0,range_distance=0):
+    def __init__(self,risk_situation=False,confidence="0",object_type="None",risk_factor_x_min=0,risk_factor_y_min=0,risk_factor_x_max=0,risk_factor_y_max=0,range_distance=0,trajectory_pred_x_center=[],trajectory_pred_y_center=[]):
         self.object_type = object_type
         self.confidence= confidence
         self.risk_situation = risk_situation
@@ -21,6 +23,8 @@ class RightDetection:
         self.risk_factor_x_max = risk_factor_x_max
         self.risk_factor_y_max = risk_factor_y_max
         self.range_distance = range_distance
+        self.trajectory_pred_x_center = trajectory_pred_x_center
+        self.trajectory_pred_y_center = trajectory_pred_y_center
 
 class ContextReturn:
         
@@ -53,7 +57,20 @@ class CollisionCalculationContext:
 
         self.__run_rightDetectionAnalysis= True
 
-        self.distance_class = DistanceClass(dnn_distance_model=self.configurationManager.config_readable['dnn_distance_model'], models_path_folder=self.configurationManager.config_readable['models_path_folder'])
+
+        self.__dnn_calculation = True
+        if self.__dnn_calculation:
+            self.distance_class = DistanceClass(configurationManager=configurationManager)
+
+
+        self.__rnn_calculation = False
+        self.__rnn_req_input_size = 30
+        #self.df_rnn = None
+        if  self.__rnn_calculation:
+            self.rnn_class = RNNClass(configurationManager=configurationManager)
+            #self.df_rnn = pd.DataFrame() 
+            self.deque_xcenter = deque(maxlen = self.__rnn_req_input_size)
+            self.deque_ycenter = deque(maxlen = self.__rnn_req_input_size)
         
         
     def context(self, frame):
@@ -123,13 +140,39 @@ class CollisionCalculationContext:
                 class_id=int(class_id)
 
                 range_distance = 0
+                trajectory_pred_x_center = []
+                trajectory_pred_y_center = []
 
                 enum_value = ObjectTypes(class_id).name
 
                 if confidence >= Utils.yolo_confidence:
-                    range_distance  = self.distance_class.distance_single_prediction(xmin=x1,ymin=y1,xmax=x2,ymax=y2,width=x2-x1,height=y2-y1,class_type=class_id)
-                    range_distance = range_distance + (-250)
-                    right_detection=RightDetection(risk_situation=True,confidence=str(confidence),object_type=enum_value,risk_factor_x_min=float(x1),risk_factor_y_min=float(y1),risk_factor_x_max=float(x2),risk_factor_y_max=float(y2), range_distance=range_distance)
+                    if self.__dnn_calculation:
+                        range_distance  = self.distance_class.distance_single_prediction(xmin=x1,ymin=y1,xmax=x2,ymax=y2,width=x2-x1,height=y2-y1,class_type=class_id)
+                        range_distance = range_distance + (-250)
+
+
+                    if self.__rnn_calculation:
+                        x_center = int((x1+x2)/2)
+                        y_center = int((y1+y2)/2)
+
+                        self.deque_xcenter.append(x_center)
+                        self.deque_ycenter.append(y_center)
+
+                        count_i = len(self.deque_xcenter)
+                        if count_i >= self.__rnn_req_input_size:
+                            trajectory_pred_x_center = self.rnn_class.pred(self.deque_xcenter, 'x_center')
+                            trajectory_pred_y_center = self.rnn_pred_x #self.rnn_class.pred(self.deque_ycenter, 'y_center')
+
+                    right_detection=RightDetection(risk_situation=True,
+                                                   confidence=str(confidence),
+                                                   object_type=enum_value,
+                                                   risk_factor_x_min=int(x1),
+                                                   risk_factor_y_min=int(y1),
+                                                   risk_factor_x_max=int(x2),
+                                                   risk_factor_y_max=int(y2), 
+                                                   range_distance=range_distance,
+                                                   trajectory_pred_x_center=trajectory_pred_x_center,
+                                                   trajectory_pred_y_center=trajectory_pred_y_center)
                     if self.visual_drawing:
                         DrawingOpencv.drawing_rectangle(frame, enum_value, (x1,y1), (x2,y2))
                         # cv2.imwrite("test.png", cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
