@@ -230,6 +230,25 @@ class DrawingOpencv:
                         print("for i in range(right_parts): i 1")
                         pass
 
+                if i==2:
+                    try:
+                        center_x = center_x
+                        center_y = center_y + 50
+
+                        text = ""
+
+                        for i in right_detection.trajectory_pred_x_center:
+                            text = text + str(i) +"/n"
+
+                        for i in right_detection.trajectory_pred_y_center:
+                            text = text + str(i) +"/n"
+
+                        cv2.putText(white_image, text, (center_x, center_y), cv2.FONT_HERSHEY_SIMPLEX, 1.0/2, color, thickness)
+                    except:
+                        print("for i in range(right_parts): i 1")
+                        pass
+
+
 
                 
 

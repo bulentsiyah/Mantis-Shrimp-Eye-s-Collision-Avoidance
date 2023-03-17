@@ -5,11 +5,11 @@ ana_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/
 output_path_folder = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/outputs/
 models_path_folder = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/models/
 dnn_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/dnn_dataset/
+dnn_distance_model = model_20230316-164852
 siamese_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/siamese_dataset/
 yolo_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/yolo_dataset/
 right_detection_model = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/models/yolo/best_420_1024.pt
 dnn_rnn_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/rnn_dataset/
-dnn_distance_model = model_20230316-164852
 rnn_trajectory_model_folder = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/models/rnn/
 
 [changeable]

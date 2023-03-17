@@ -16,7 +16,7 @@ class RNNClass:
         self.path = self.configurationManager.config_readable['rnn_trajectory_model_folder']
         self.model= keras.models.load_model(self.path+"lstm_x_center.h5")
         print("Loaded keras rnn model from disk")
-        self.scalar = joblib.load(self.path+"train_scaler_xcenter.save")
+        self.scalar = joblib.load(self.path+"x_center_transform.save")
         self.scalar.clip = False
 
         '''dataset_train = pd.read_csv(self.path+'Google_Stock_Price_Train.csv')

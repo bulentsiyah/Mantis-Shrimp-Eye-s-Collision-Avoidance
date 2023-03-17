@@ -1,7 +1,7 @@
 
 import time
 from ultralytics import YOLO
-import cv2
+import copy
 
 from distanceclass import DistanceClass
 from rnnclass import RNNClass
@@ -63,12 +63,10 @@ class CollisionCalculationContext:
             self.distance_class = DistanceClass(configurationManager=configurationManager)
 
 
-        self.__rnn_calculation = False
+        self.__rnn_calculation = True
         self.__rnn_req_input_size = 30
-        #self.df_rnn = None
         if  self.__rnn_calculation:
-            self.rnn_class = RNNClass(configurationManager=configurationManager)
-            #self.df_rnn = pd.DataFrame() 
+            #self.rnn_class = RNNClass(configurationManager=configurationManager)
             self.deque_xcenter = deque(maxlen = self.__rnn_req_input_size)
             self.deque_ycenter = deque(maxlen = self.__rnn_req_input_size)
         
@@ -160,8 +158,8 @@ class CollisionCalculationContext:
 
                         count_i = len(self.deque_xcenter)
                         if count_i >= self.__rnn_req_input_size:
-                            trajectory_pred_x_center = self.rnn_class.pred(self.deque_xcenter, 'x_center')
-                            trajectory_pred_y_center = self.rnn_pred_x #self.rnn_class.pred(self.deque_ycenter, 'y_center')
+                            trajectory_pred_x_center = list(self.deque_xcenter)[0:10]  #self.rnn_class.pred(self.deque_xcenter, 'x_center')
+                            trajectory_pred_y_center =  list(self.deque_ycenter)[0:10] #self.rnn_pred_x #self.rnn_class.pred(self.deque_ycenter, 'y_center')
 
                     right_detection=RightDetection(risk_situation=True,
                                                    confidence=str(confidence),

@@ -1,10 +1,6 @@
 
-import pandas as pd
-from sklearn.preprocessing import StandardScaler
 import joblib
-from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, TensorBoard
-from keras.models import model_from_json,Model, load_model
-from keras.layers import Dense, Input, Activation, BatchNormalization,Add,Dropout
+from keras.models import model_from_json
 import matplotlib.pyplot as plt
 
 import sys
