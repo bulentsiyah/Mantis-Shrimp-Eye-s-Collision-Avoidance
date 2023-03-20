@@ -1,13 +1,12 @@
 import warnings
 warnings.filterwarnings("ignore")
+from ultralytics import YOLO
+
 import argparse
 import sys, os
 import cv2
-import time
-from datetime import datetime
 import copy
 import glob
-import numpy as np
 
 from collisioncalculationcontext import CollisionCalculationContext
 
@@ -20,6 +19,17 @@ from videocapture import VideoCapture
 from tools import DrawingOpencv
 from cameraparameters import CameraParameters
 
+import torch
+import gc
+
+
+
+def clear_gpu_memory():
+    torch.cuda.empty_cache()
+    gc.collect()
+
+
+clear_gpu_memory()
 
 class TestOnVideo:
 

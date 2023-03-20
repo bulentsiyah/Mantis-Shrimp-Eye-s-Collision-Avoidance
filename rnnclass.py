@@ -25,13 +25,12 @@ class RNNClass:
         self.inputs = self.inputs.reshape(-1,1)'''
 
   
-    def pred(self, df_rnn, pred_str):
+    def pred(self, list_x_center,list_y_center, list_distance, pred_str):
 
         #df_rnn = df_rnn[pred_str]
-        df_rnn = list(df_rnn)
-        elon_array = np.array(df_rnn)
+        df_rnn = list(list_x_center)
+        elon_array = np.array(list_x_center)
 
-        
         #inputs = elon_array.values()
         inputs = elon_array.reshape(-1,1)
     
@@ -39,12 +38,17 @@ class RNNClass:
         
         X_Test = []
 
-        X_Test.append(test_set_scaled[0:len(test_set_scaled), 0])
+        #X_Test.append(test_set_scaled[0:len(test_set_scaled), 0])
+
+        
+        X_Test.append([test_set_scaled[0:len(test_set_scaled), 0], test_set_scaled[0:len(test_set_scaled), 0], test_set_scaled[0:len(test_set_scaled), 0]])
 
         X_Test = np.array(X_Test)
 
         
-        X_Test = np.reshape(X_Test, (X_Test.shape[0], X_Test.shape[1], 1))
+        #X_Test = np.reshape(X_Test, (X_Test.shape[0], X_Test.shape[1], 1))
+
+        X_Test = np.reshape(X_Test, (X_Test.shape[0], X_Test.shape[2],3 ))
 
         y_pred = self.model.predict(X_Test)
 

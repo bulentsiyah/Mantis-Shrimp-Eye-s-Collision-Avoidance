@@ -1,11 +1,16 @@
 
 import joblib
-from keras.models import model_from_json
+#from tensorflow.keras.models import model_from_json
+
+from tensorflow.keras.models import load_model
 import matplotlib.pyplot as plt
 
 import sys
 sys.path.append('tools')
 from configmanager import ConfigurationManager
+
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 class DistanceClass:
 
@@ -17,13 +22,17 @@ class DistanceClass:
         self.dnn_distance_model=self.configurationManager.config_readable['dnn_distance_model']
 
         # load weights into new model
-        json_file = open(self.models_path_folder+'dnn/{}.json'.format(self.dnn_distance_model), 'r')
+        '''json_file = open(self.models_path_folder+'dnn/{}.json'.format(self.dnn_distance_model), 'r')
         loaded_model_json = json_file.read()
         json_file.close()
-        self.loaded_model = model_from_json(loaded_model_json)
+        self.loaded_model = model_from_json(loaded_model_json)'''
         model_path = self.models_path_folder+"dnn/{}.h5".format(self.dnn_distance_model)
-        self.loaded_model.load_weights(model_path)
+
+        self.loaded_model = load_model(model_path)
         print("Loaded Dnn model from disk")
+
+        from tensorflow.python.client import device_lib
+        print(device_lib.list_local_devices())
 
         self.scalar_X = joblib.load(self.models_path_folder+"dnn/xtrain_scaler.save")
         

@@ -22,7 +22,10 @@ if __name__ == '__main__':
     data = configurationManager.config_readable['yolo_dataset']+"/custom.yaml"
     last_weights = configurationManager.config_readable['right_detection_model']
 
-    epoch = 10
+    os.chdir("yolo/")
+    os.getcwd()
+
+    epoch = 50
     imgsz = 1024
     last_folder = "best_"+str(420+epoch)+"_" + str(imgsz)
 
