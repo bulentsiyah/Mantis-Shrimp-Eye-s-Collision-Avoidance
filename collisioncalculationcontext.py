@@ -146,7 +146,7 @@ class CollisionCalculationContext:
                 if confidence >= Utils.yolo_confidence:
                     if self.__dnn_calculation:
                         range_distance  = self.distance_class.distance_single_prediction(xmin=x1,ymin=y1,xmax=x2,ymax=y2,width=x2-x1,height=y2-y1,class_type=class_id)
-                        range_distance = range_distance + (-250)
+                        range_distance = range_distance 
 
 
                     if self.__rnn_calculation:
