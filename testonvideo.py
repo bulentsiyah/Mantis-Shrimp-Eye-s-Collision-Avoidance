@@ -19,17 +19,6 @@ from videocapture import VideoCapture
 from tools import DrawingOpencv
 from cameraparameters import CameraParameters
 
-import torch
-import gc
-
-
-
-def clear_gpu_memory():
-    torch.cuda.empty_cache()
-    gc.collect()
-
-
-clear_gpu_memory()
 
 class TestOnVideo:
 

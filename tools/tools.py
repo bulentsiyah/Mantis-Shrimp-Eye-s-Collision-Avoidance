@@ -89,6 +89,8 @@ class DrawingOpencv:
     def __init__(self):
         
         self.right_detection_image = None #np.zeros((right_part_height, int(her_blogun_genisligi_w), 3), dtype=np.uint8) * 255
+
+        self.right_detection_range_distance = None
         
 
     def main_print_show(self,frame, deepcopy_frame,camera_parameters, right_detection):
@@ -224,7 +226,12 @@ class DrawingOpencv:
                     try:
                         center_x = center_x
                         center_y = center_y + 50
-                        text = str(right_detection.range_distance)
+
+                        if int(right_detection.range_distance) !=0:
+                            self.right_detection_range_distance = right_detection.range_distance
+         
+
+                        text = str(self.right_detection_range_distance)
                         cv2.putText(white_image, text, (center_x, center_y), cv2.FONT_HERSHEY_SIMPLEX, 1.0/2, color, thickness)
                     except:
                         print("for i in range(right_parts): i 1")

@@ -23,7 +23,7 @@ class DNNCompare:
         self.flight_id, ext = os.path.splitext(os.path.basename(video_path_file))
 
         #ucusun kendı dnn dataframe
-        path_flight_dnn = self.configurationManager .config_readable['dnn_dataset']+self.flight_id+".csv"
+        path_flight_dnn = self.configurationManager .config_readable['dnn_dataset_pure']+self.flight_id+".csv"
         self.flight_dnn_dataframe =pd.read_csv(path_flight_dnn)
 
         #pred dnn hazılrık

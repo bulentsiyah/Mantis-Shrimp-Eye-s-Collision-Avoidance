@@ -63,7 +63,7 @@ class CollisionCalculationContext:
             self.distance_class = DistanceClass(configurationManager=configurationManager)
 
 
-        self.__rnn_calculation = True
+        self.__rnn_calculation = False
         self.__rnn_req_input_size = 30
         if  self.__rnn_calculation:
             self.rnn_class = RNNClass(configurationManager=configurationManager)

@@ -18,15 +18,12 @@ class DistanceClass:
 
         self.configurationManager = configurationManager
 
-        self.models_path_folder=self.configurationManager.config_readable['models_path_folder']
+        self.dnn_distance_model_folder=self.configurationManager.config_readable['dnn_distance_model_folder']
         self.dnn_distance_model=self.configurationManager.config_readable['dnn_distance_model']
 
+
         # load weights into new model
-        '''json_file = open(self.models_path_folder+'dnn/{}.json'.format(self.dnn_distance_model), 'r')
-        loaded_model_json = json_file.read()
-        json_file.close()
-        self.loaded_model = model_from_json(loaded_model_json)'''
-        model_path = self.models_path_folder+"dnn/{}.h5".format(self.dnn_distance_model)
+        model_path = self.dnn_distance_model
 
         self.loaded_model = load_model(model_path)
         print("Loaded Dnn model from disk")
@@ -34,9 +31,9 @@ class DistanceClass:
         from tensorflow.python.client import device_lib
         print(device_lib.list_local_devices())
 
-        self.scalar_X = joblib.load(self.models_path_folder+"dnn/xtrain_scaler.save")
+        self.scalar_X = joblib.load(self.dnn_distance_model_folder+"/xtrain_scaler.save")
         
-        self.scalar_y = joblib.load(self.models_path_folder+"dnn/ytrain_scaler.save")
+        self.scalar_y = joblib.load(self.dnn_distance_model_folder+"/ytrain_scaler.save")
 
         
     def distance_single_prediction(self,xmin, ymin, xmax, ymax, width,height,class_type):

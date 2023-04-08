@@ -19,16 +19,27 @@ if __name__ == '__main__':
 
 
     configurationManager =  ConfigurationManager()
-    data = configurationManager.config_readable['yolo_dataset']+"/custom_096e7c2b475a4047a192e51998724ee1_63.yaml"
+    data = configurationManager.config_readable['right_detection_dataset']+"custom_19c926b7d3b8401eac0e08f87644af5a.yaml"
     last_weights = configurationManager.config_readable['right_detection_model']
 
 
-    epoch = 30
+    os.chdir("./yolo/")
+    print(os.getcwd())
+
+    last_weights = "../"+last_weights
+    data = "../"+data
+
+
+    epoch = 50
     imgsz = 1024
-    last_folder = "best_"+str(470+epoch)+"_" + str(imgsz)
+    last_folder = "best_"+str(500+epoch)+"_" + str(imgsz)
 
     # Load a model
     model = YOLO(last_weights)  # load a pretrained model (recommended for training)
+
+    
+
+
 
     # Train the model
     results = model.train(
