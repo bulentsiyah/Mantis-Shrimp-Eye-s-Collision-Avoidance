@@ -13,6 +13,30 @@ from configmanager import ConfigurationManager
 
 from tools import DrawingOpencv, Utils, ObjectTypes
 
+import cv2
+
+class ContextReturn:
+        
+    def __init__(self):
+        self.right_frame = None
+        self.left_frame = None
+        self.return_call_time = None
+        self.right_detection = RightDetection()
+        self.left_detection = LeftDetection()
+        self.method_fps = 0
+        self.method_call_number = 0
+
+class LeftDetection:
+    def __init__(self,motion_detection=None, risk_situation=False,confidence="0",object_type="None",risk_factor_x_min=0,risk_factor_y_min=0,risk_factor_x_max=0,risk_factor_y_max=0):
+        self.motion_detection = motion_detection
+        self.object_type = object_type
+        self.confidence= confidence
+        self.risk_situation = risk_situation
+        self.risk_factor_x_min = risk_factor_x_min
+        self.risk_factor_y_min = risk_factor_y_min
+        self.risk_factor_x_max = risk_factor_x_max
+        self.risk_factor_y_max = risk_factor_y_max
+                     
 class RightDetection:
     def __init__(self,risk_situation=False,confidence="0",object_type="None",risk_factor_x_min=0,risk_factor_y_min=0,risk_factor_x_max=0,risk_factor_y_max=0,range_distance=0,trajectory_pred_x_center=[],trajectory_pred_y_center=[]):
         self.object_type = object_type
@@ -26,14 +50,7 @@ class RightDetection:
         self.trajectory_pred_x_center = trajectory_pred_x_center
         self.trajectory_pred_y_center = trajectory_pred_y_center
 
-class ContextReturn:
-        
-    def __init__(self):
-        self.frame = None
-        self.return_call_time = None
-        self.right_detection = RightDetection()
-        self.method_fps = 0
-        self.method_call_number = 0
+
         
 
 class CollisionCalculationContext:
@@ -57,7 +74,6 @@ class CollisionCalculationContext:
 
         self.__run_rightDetectionAnalysis= True
 
-
         self.__dnn_calculation = True
         if self.__dnn_calculation:
             self.distance_class = DistanceClass(configurationManager=configurationManager)
@@ -69,6 +85,13 @@ class CollisionCalculationContext:
             self.rnn_class = RNNClass(configurationManager=configurationManager)
             self.deque_xcenter = deque(maxlen = self.__rnn_req_input_size)
             self.deque_ycenter = deque(maxlen = self.__rnn_req_input_size)
+
+
+        self.__run_leftDetectionAnalysis= True
+        self.__motion_calculation= True
+
+        self.__motion_frame_1= None
+        self.__motion_frame_2= None
         
         
     def context(self, frame):
@@ -97,9 +120,15 @@ class CollisionCalculationContext:
         
         # bunu ilerde async task donustur
         if self.__run_rightDetectionAnalysis:
-            frame, right_detection=self.rightDetectionAnalysis(frame=self.frame)
-            self.context_return.frame = frame
+            temp_frame, right_detection=self.rightDetectionAnalysis(frame=copy.copy(self.frame))
+            self.context_return.right_frame = temp_frame
             self.context_return.right_detection = right_detection
+
+
+        if self.__run_leftDetectionAnalysis:
+            temp_frame, left_detection=self.leftDetectionAnalysis(frame=self.frame)
+            self.context_return.left_frame = temp_frame
+            self.context_return.left_detection = left_detection
 
             
 
@@ -112,13 +141,94 @@ class CollisionCalculationContext:
 
 
         #return hazırlığı
-        self.context_return.frame = self.frame
         self.context_return.return_call_time= self.call_time_for_context_return
         self.context_return.method_fps = self.__method_fps 
         self.context_return.method_call_number=self.context_return.method_call_number + 1
 
                 
         return self.context_return
+    
+
+    def leftDetectionAnalysis(self, frame):
+
+        try: 
+
+            left_detection= LeftDetection()
+
+            if self.__motion_calculation:
+                left_detection.motion_detection = self.leftMotionDetection(frame=frame)
+
+
+            return frame, left_detection
+        
+        except Exception as e:
+            print(f'caught {type(e)}: e')
+            print("exception: def leftDetectionAnalysis")
+            
+
+
+    def leftMotionDetection(self, frame):
+        try:
+
+            if self.__motion_frame_1 is None:  
+                self.__motion_frame_1 = frame
+
+            if self.__motion_frame_2 is None:
+                self.__motion_frame_2 = frame
+
+            self.__motion_frame_2 = frame
+
+            diff = cv2.absdiff(self.__motion_frame_1 , self.__motion_frame_2)
+            #cv2.imshow("Diffrence",diff)
+            
+            gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+            #blur = cv2.GaussianBlur(gray, (5,5), 0)
+            #cv2.imshow("Blurred",blur)
+            
+            _,thresh = cv2.threshold(gray, 70, 255, cv2.THRESH_BINARY)
+            dilated = cv2.dilate(thresh, None, iterations = 1)
+            
+            contours,_ = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+            #cv2.drawContours(frame1, contours, -1, color, 3)
+
+            start_point_min_y = frame.shape[0]
+            start_point_max_y = 0 #frame_height
+            end_point_min_x = frame.shape[1]
+            end_point_max_x = 0 #frame_width
+
+            for cnt in contours:
+                    x, y, w, h = cv2.boundingRect(cnt)
+                    if start_point_min_y > y:
+                        start_point_min_y = y
+
+                    if start_point_max_y < (y+h):
+                        start_point_max_y = (y+h)
+
+
+                    if end_point_min_x > x:
+                        end_point_min_x = x
+
+                    if end_point_max_x < (x+w):
+                        end_point_max_x = (x+w)
+
+                    cv2.rectangle(self.__motion_frame_1 , (x, y), (x+w, y+h), (0, 255, 0), 2)
+
+            #cv2.imshow("Feed",self.__motion_frame_1 )
+
+            frame = copy.copy(self.__motion_frame_1)
+
+            padding= 0
+            frame = frame[start_point_min_y-padding:start_point_max_y+padding,end_point_min_x-padding:end_point_max_x+padding ] 
+            
+            self.__motion_frame_1 = copy.copy(self.__motion_frame_2)
+  
+            
+            return frame
+        
+        except Exception as e:
+            print(f'caught {type(e)}: e')
+            print("exception: def leftMotionDetection")
     
 
     def rightDetectionAnalysis(self, frame):
@@ -180,4 +290,4 @@ class CollisionCalculationContext:
         except Exception as e:
             print(f'caught {type(e)}: e')
             print("exception: def rightDetectionAnalysis")
-            pass
+

@@ -91,9 +91,11 @@ class DrawingOpencv:
         self.right_detection_image = None #np.zeros((right_part_height, int(her_blogun_genisligi_w), 3), dtype=np.uint8) * 255
 
         self.right_detection_range_distance = None
+
+        self.left_detection_motion_image = None 
         
 
-    def main_print_show(self,frame, deepcopy_frame,camera_parameters, right_detection):
+    def main_print_show(self,frame, deepcopy_frame,camera_parameters, right_detection, left_detection):
         imshow = True
         if imshow:
 
@@ -119,6 +121,9 @@ class DrawingOpencv:
 
             if self.right_detection_image is None:
                 self.right_detection_image = np.zeros((right_part_height, int(her_blogun_genisligi_w), 3), dtype=np.uint8) * 255
+
+            if self.left_detection_motion_image is None:
+                self.left_detection_motion_image = np.zeros((left_part_height, int(her_blogun_genisligi_w), 3), dtype=np.uint8) * 255
 
 
             try:
@@ -197,6 +202,15 @@ class DrawingOpencv:
                 center_x = 5+int(start_point[0])#int((start_point[0]+end_point[0])/2)
                 center_y = 20+int(start_point[1])
                 cv2.putText(white_image, DrawingOpencv.left_section[i], (center_x, center_y), cv2.FONT_HERSHEY_SIMPLEX, 1.0/2, color, thickness)
+
+                if i ==0:
+                    try:
+                        h, w = self.left_detection_motion_image.shape[:2] # ona ayrılan anın boyutu 341*244
+                        motion_resize_image = cv2.resize(left_detection.motion_detection, (w, h))
+                        white_image[start_point[1]:start_point[1]+h, start_point[0]:start_point[0]+w] = motion_resize_image
+                    except:
+                        print("for i in range(left_parts): i 0")
+                        pass
                 
 
             # Sağ tarafı da 3 eşit parçaya ayırıyoruz
