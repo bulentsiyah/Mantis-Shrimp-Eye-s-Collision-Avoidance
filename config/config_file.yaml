@@ -8,12 +8,12 @@ right_detection_model = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/m
 dnn_dataset_pure = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/dnn_dataset/pure/
 dnn_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/dnn_dataset/
 dnn_distance_model_folder = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/models/dnn/
-dnn_distance_model = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/models/dnn/model_20230408-170519.h5
+dnn_distance_model = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/models/dnn/model_20230409-031633.h5
 siamese_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/siamese_dataset/
 rnn_dataset = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/rnn_dataset/
 rnn_trajectory_model_folder = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/models/rnn/
 
 [changeable]
 threshold = 0.7
-video_path_file = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/videos/train\1b3a52c0f1764533b32e36992b17b6e1.mp4
+video_path_file = ../../Datasets/Mantis-Shrimp-Eye-s-Collision-Avoidance/videos/train\0ab5b7692a72489780d055e76a2fce76.mp4
 

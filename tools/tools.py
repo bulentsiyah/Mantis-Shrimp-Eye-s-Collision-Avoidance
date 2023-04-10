@@ -128,10 +128,14 @@ class DrawingOpencv:
 
             try:
                 if right_detection.object_type != "None":
-                    start_point_min_y = int(right_detection.risk_factor_y_min)
+                    start_point_min_y = int(right_detection.risk_factor_y_min) # negatif deger aliyor
                     start_point_max_y = int(right_detection.risk_factor_y_max)
                     end_point_min_x = int(right_detection.risk_factor_x_min)
                     end_point_max_x =int(right_detection.risk_factor_x_max)
+                    start_point_min_y_arrow = start_point_min_y
+                    start_point_max_y_arrow = start_point_max_y
+                    end_point_min_x_arrow   = end_point_min_x
+                    end_point_max_x_arrow   = end_point_max_x
                     self.right_detection_image = deepcopy_frame[start_point_min_y:start_point_max_y,end_point_min_x:end_point_max_x ] 
 
 
@@ -148,6 +152,10 @@ class DrawingOpencv:
                         end_point_min_x = int(end_point_center_y - (her_blogun_genisligi_w/2))
                         end_point_max_x =  int(end_point_min_x +her_blogun_genisligi_w)
                         
+                        if start_point_min_y<0:
+                            start_point_min_y = 0
+                        elif end_point_min_x<0:
+                            end_point_min_x = 0
                         self.right_detection_image = deepcopy_frame[start_point_min_y:start_point_max_y,end_point_min_x:end_point_max_x ] 
                     except:
                         pass
@@ -167,6 +175,17 @@ class DrawingOpencv:
                         # resmin yüksekliği ve genişliği
                         h, w = self.right_detection_image.shape[:2]
                         # merkez noktasını hesapla
+                        if w < 244: # her_blogun_genisligi_w = 244
+                            diff_center_w = 244 - w 
+                            w = w + diff_center_w
+                        else:
+                            diff_center_w = 0
+
+                        if h < 341: # right_part_height
+                            diff_center_h = 341 - h 
+                            h = h + diff_center_h
+                        else:
+                            diff_center_h = 0
                         center = (w//2, h//2)
                         # yeni boyutları hesapla
                         new_h, new_w = int(h * zoom), int(w * zoom)
@@ -178,10 +197,13 @@ class DrawingOpencv:
                         x, y = (new_w//2, new_h//2)
 
                         # resmi kes
-                        x1, y1 = x - center[0], y - center[1]
-                        x2, y2 = x1 + w, y1 + h
+                        x1, y1 = x - center[0] + diff_center_w, y - center[1] - diff_center_h
+                        x2, y2 = x1 + w + diff_center_w, y1 + h - diff_center_h
                         resized = resized[y1:y2, x1:x2]
 
+                        '''x1, y1 = x - center[0], y - center[1]
+                        x2, y2 = x1 + w, y1 + h
+                        resized = resized[y1:y2, x1:x2]'''
                         # orijinal boyutlara döndür
                         self.right_detection_image = cv2.resize(resized, (w, h))
 
@@ -219,7 +241,6 @@ class DrawingOpencv:
                 start_point = (white_image_w-her_blogun_genisligi_w, i * right_part_height)
                 end_point = (white_image_w, (i+1) * right_part_height)
 
-
                 color = DrawingOpencv.right_section_color[i]  #color_red
                 thickness = 2
                 white_image = cv2.rectangle(white_image, start_point, end_point, color, thickness)
@@ -241,12 +262,43 @@ class DrawingOpencv:
                         center_x = center_x
                         center_y = center_y + 50
 
+                        origin = (1490,680)
+                        coord_system_length = 50
+                        thickness_coordinate = 2
+                        # X eksenini çiz
+                        cv2.line(white_image, (origin[0], origin[1]), (origin[0] + coord_system_length, origin[1]), (255, 0, 0), thickness_coordinate)
+                        cv2.putText(white_image, "X", (origin[0] + coord_system_length + 5, origin[1] + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), thickness_coordinate)
+                        # Y eksenini çiz
+                        cv2.line(white_image, (origin[0], origin[1]), (origin[0], origin[1] - coord_system_length), (0, 100, 255), thickness_coordinate)
+                        cv2.putText(white_image, "Y", (origin[0] - 10, origin[1] - coord_system_length - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 100, 255), thickness_coordinate)
+                        # Z eksenini çiz
+                        cv2.line(white_image, (origin[0], origin[1]), (origin[0]+30, origin[1] - coord_system_length + 10), (0, 255, 0), thickness_coordinate)
+                        cv2.putText(white_image, "Z", (origin[0] + 35, origin[1] - coord_system_length + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), thickness_coordinate)
+                        
+                        center_frame = (her_blogun_genisligi_w+frame_w/2,frame_h/2)
+                        end_arrow = (her_blogun_genisligi_w+(end_point_min_x_arrow+end_point_max_x_arrow)/2,(start_point_min_y_arrow+start_point_max_y_arrow)/2)
+                        center_frame = tuple(map(int, center_frame))
+                        end_arrow = tuple(map(int, end_arrow))
+                        #referans ok 
+                        # cv2.arrowedLine(white_image, center_frame, end_arrow, (0, 255, 0), thickness=3, tipLength=0.1, line_type=cv2.LINE_AA)
+
+                        fixed_center = (1591,512)
+                        arrow_length = 100
+                        direction = np.array(end_arrow) - np.array(center_frame)
+                        scale = arrow_length / np.linalg.norm(direction)
+                        second_arrow_end = np.array(fixed_center) + scale * direction
+                        second_arrow_end = tuple(map(int, second_arrow_end))
+
                         if int(right_detection.range_distance) !=0:
                             self.right_detection_range_distance = right_detection.range_distance
-         
 
+                        #DNN Gösterim ok 
+                        cv2.arrowedLine(white_image, fixed_center, second_arrow_end, (0, 255, 0), thickness=3, tipLength=0.1, line_type=cv2.LINE_AA)
+
+                        # Bu arrowların başına "distance" değişkeninden aldığı değeri yazdır
+                        cv2.putText(white_image, f"{self.right_detection_range_distance:.2f}m", (fixed_center[0]-30, fixed_center[1]+30), cv2.FONT_HERSHEY_SIMPLEX, 1.0/2,  color, thickness)        
                         text = str(self.right_detection_range_distance)
-                        cv2.putText(white_image, text, (center_x, center_y), cv2.FONT_HERSHEY_SIMPLEX, 1.0/2, color, thickness)
+                        # cv2.putText(white_image, text, (center_x, center_y), cv2.FONT_HERSHEY_SIMPLEX, 1.0/2, color, thickness)
                     except:
                         print("for i in range(right_parts): i 1")
                         pass
