@@ -33,7 +33,7 @@ if __name__ == '__main__':
     data = "../"+data
 
 
-    epoch = 50
+    epoch = 100
     imgsz = 1024
     last_folder = "best_"+str(int(last_weights_name)+epoch)+"_" + str(imgsz)
 

@@ -354,7 +354,7 @@ class DrawingOpencv:
                         print("for i in range(right_parts): i 1")
                         
 
-
+                white_image = cv2.rectangle(white_image, start_point, end_point, color, thickness)
 
                 
 
